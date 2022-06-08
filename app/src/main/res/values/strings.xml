@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Simple To Do</string>
+    <string name="btnadd">ADD</string>
+    <string name="btnclear">CLEAR</string>
+    <string name="tvhintadd">Type in a new task here</string>
+
+</resources>
