@@ -10,15 +10,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText etntask;
+    EditText ettask;
     Button btnadd;
+    Button btndelete;
     Button btnclear;
     ListView lvtasks;
+    Spinner spinneraddremove;
     ArrayList<String> altasks;
 
     @Override
@@ -26,34 +29,78 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        etntask = findViewById(R.id.editTaskList);
+        ettask = findViewById(R.id.editTaskList);
         btnadd = findViewById(R.id.buttonAdd);
+        btndelete = findViewById(R.id.buttonDelete);
         btnclear = findViewById(R.id.buttonClear);
         lvtasks = findViewById(R.id.listViewTasks);
+        spinneraddremove = findViewById(R.id.spinner1);
+        altasks = new ArrayList<>();
 
-        altasks = new ArrayList<String>();
-
-
-        ArrayAdapter aatask = new ArrayAdapter(this, android.R.layout.simple_list_item_1,altasks);
-        lvtasks.setAdapter(aatask);
-
-        btnadd.setOnClickListener(new View.OnClickListener() {
+        ArrayAdapter aatasks = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,altasks);
+        lvtasks.setAdapter(aatasks);
+        spinneraddremove.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                String tasks = etntask.getText().toString();
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                switch(position){
+                    case 0:
+                        btndelete.setEnabled(false);
+                        btnadd.setEnabled(true);
+                        ettask.setHint("Type in a new task");
 
-                altasks.add(tasks);
-                aatask.notifyDataSetChanged();
+                        btnadd.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String newtask = ettask.getText().toString();
+                                altasks.add(newtask);
+                                aatasks.notifyDataSetChanged();
+                            }
+
+                        });
+                        break;
+                    case 1:
+                        btndelete.setEnabled(true);
+                        btnadd.setEnabled(false);
+                        ettask.setHint("Type in the index of the task to be removed");
+
+                        btndelete.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                int taskindex = Integer.parseInt(ettask.getText().toString());
+
+                                if(altasks.size() == 0){
+                                    Toast.makeText(MainActivity.this,"You don't have any task to remove",Toast.LENGTH_SHORT).show();
+
+                                }else if(altasks.size() != 0){
+                                    for(int i = 0; i < altasks.size();i++){
+                                        if(taskindex == i){
+                                            altasks.remove(taskindex);
+                                            aatasks.notifyDataSetChanged();
+                                        }else{
+                                            Toast.makeText(MainActivity.this,"Wrong index number",Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        break;
+                }
+                btnclear.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        altasks.clear();
+                        aatasks.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
-        btnclear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                altasks.clear();
-                aatask.notifyDataSetChanged();
-            }
-        });
+
 
 
     }
